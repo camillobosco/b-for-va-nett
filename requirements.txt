@@ -11,4 +11,4 @@ plotly
 datetime
 joblib
 xgboost
-sklearn
+scikit-learn
