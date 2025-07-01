@@ -1,0 +1,14 @@
+streamlit
+pandas
+pyodbc
+tempfile
+os
+numpy
+seaborn
+matplotlib
+io
+plotly
+datetime
+joblib
+xgboost
+sklearn
