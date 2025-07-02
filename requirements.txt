@@ -8,3 +8,4 @@ scikit-learn>=1.1
 openpyxl  # Only if you read/write Excel files
 pyodbc>=4.0
 xgboost>=1.7
+xlsxwriter>=3.0  # For writing Excel files with formatting
