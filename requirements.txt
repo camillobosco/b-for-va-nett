@@ -6,3 +6,5 @@ seaborn>=0.11
 plotly>=5.15
 scikit-learn>=1.1
 openpyxl  # Only if you read/write Excel files
+pyodbc>=4.0
+xgboost>=1.7
