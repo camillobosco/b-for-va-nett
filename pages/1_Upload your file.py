@@ -15,9 +15,9 @@ st.title("Upload VA Data")
 # ---------------- RESET STATE BUTTON ----------------
 if st.button("🔁 Reset and Load New File"):
     for key in list(st.session_state.keys()):
-        if key.startswith("df_") or "uploaded" in key or "filtered" in key:
+        if key.startswith("df_") or key.startswith("fig") or "uploaded" in key or "filtered" in key:
             del st.session_state[key]
-    st.experimental_rerun()
+    st.rerun()
 
 # ---------------- FILE UPLOAD ----------------
 

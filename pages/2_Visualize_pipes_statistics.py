@@ -18,6 +18,44 @@ st.title("Process and Plot VA Data")
 # Button for user to start the analysis
 run_analysis = st.button("Analyse and plot!")
 
+# Se i grafici sono già in session_state, plotta subito e interrompi ulteriori elaborazioni
+if ('fig1_2' in st.session_state and
+    'fig2_2' in st.session_state and
+    'fig3_2' in st.session_state and
+    'fig4_2' in st.session_state and
+    'fig5_2' in st.session_state and
+    'fig6_2' in st.session_state):
+    
+    tabs = st.tabs([
+        "Breaks by Decade", 
+        "Breaks by Material", 
+        "Breaks by Material and Diameter",
+        "Breaks per km by Material",
+        "Pipe Count by Material and Decade",
+        "Pipe Length by Material and Decade",
+    ])
+
+    with tabs[0]:
+        st.markdown("### Number of Breaks by Installation Decade")
+        st.plotly_chart(st.session_state['fig1_2'])
+    with tabs[1]:
+        st.markdown("### Number of Breaks by Material")
+        st.plotly_chart(st.session_state['fig2_2'])
+    with tabs[2]:
+        st.markdown("### Breaks by Material and Diameter")
+        st.plotly_chart(st.session_state['fig3_2'])
+    with tabs[3]:
+        st.markdown("### Number of Breaks per km by Material")
+        st.plotly_chart(st.session_state['fig4_2'])
+    with tabs[4]:
+        st.markdown("### Number of Pipes by Material and Installation Decade")
+        st.plotly_chart(st.session_state['fig5_2'])
+    with tabs[5]:
+        st.markdown("### Kilometers of Pipe by Material and Installation Decade")
+        st.plotly_chart(st.session_state['fig6_2'])
+        
+    st.stop()
+
 if run_analysis:
     # Check if Access data is loaded (session_state has these dfs)
     if ('df_line_filtered' in st.session_state):
@@ -246,6 +284,7 @@ if run_analysis:
             fig1 = px.bar(decade_counts, x='DECADE', y='Breaks',
                         title="Number of Breaks by Installation Decade",
                         labels={"DECADE": "Installation Decade", "Breaks": "Number of Breaks"})
+            st.session_state['fig1_2'] = fig1 
             st.plotly_chart(fig1, use_container_width=True)
 
         # --- Tab 1: Breaks by Material ---
@@ -263,6 +302,7 @@ if run_analysis:
 
             fig2 = px.bar(material_counts, x='MATERIAL', y='Breaks',
                         title="Number of Breaks by Material")
+            st.session_state['fig2_2'] = fig2 
             st.plotly_chart(fig2, use_container_width=True)
 
         # --- Tab 2: Breaks by Material and Diameter (Bubble Chart) ---
@@ -283,6 +323,7 @@ if run_analysis:
                 color_continuous_scale='YlOrRd', title="Breaks by Material and Diameter",
                 labels={'DIM': 'Diameter', 'MATERIAL': 'Material', 'COUNT': 'Break Count'}
             )
+            st.session_state['fig3_2'] = fig3 
             st.plotly_chart(fig3, use_container_width=True)
 
         # --- Tab 3: Breaks per km by Material ---
@@ -302,6 +343,7 @@ if run_analysis:
             fig4 = px.bar(breaks_per_km, x='MATERIAL', y='BREAKS_PER_KM',
                         title="Breaks per km by Material",
                         labels={"BREAKS_PER_KM": "Breaks per km"})
+            st.session_state['fig4_2'] = fig4 
             st.plotly_chart(fig4, use_container_width=True)
 
         # --- Tab 4: Pipe Count by Material and Decade ---
@@ -315,6 +357,7 @@ if run_analysis:
                 labels={"COUNT": "Number of Pipes"},
                 barmode='group'
             )
+            st.session_state['fig5_2'] = fig5 
             st.plotly_chart(fig5, use_container_width=True)
 
         # --- Tab 5: Pipe Length by Material and Decade ---
@@ -328,6 +371,7 @@ if run_analysis:
                 labels={"LENGTH_KM": "Length (km)"},
                 barmode='group'
             )
+            st.session_state['fig6_2'] = fig6 
             st.plotly_chart(fig6, use_container_width=True)
 
 
@@ -386,6 +430,7 @@ if run_analysis:
             fig1 = px.bar(decade_counts, x='DECADE', y='Breaks',
                         title="Number of Breaks by Installation Decade",
                         labels={"DECADE": "Installation Decade", "Breaks": "Number of Breaks"})
+            st.session_state['fig1_2'] = fig1
             st.plotly_chart(fig1, use_container_width=True)
 
         # --- Tab 1: Breaks by Material ---
@@ -403,6 +448,7 @@ if run_analysis:
 
             fig2 = px.bar(material_counts, x='MATERIAL', y='Breaks',
                         title="Number of Breaks by Material")
+            st.session_state['fig2_2'] = fig2
             st.plotly_chart(fig2, use_container_width=True)
 
         # --- Tab 2: Breaks by Material and Diameter (Bubble Chart) ---
@@ -423,6 +469,7 @@ if run_analysis:
                 color_continuous_scale='YlOrRd', title="Breaks by Material and Diameter",
                 labels={'DIM': 'Diameter', 'MATERIAL': 'Material', 'COUNT': 'Break Count'}
             )
+            st.session_state['fig3_2'] = fig3
             st.plotly_chart(fig3, use_container_width=True)
 
         # --- Tab 3: Breaks per km by Material ---
@@ -442,6 +489,7 @@ if run_analysis:
             fig4 = px.bar(breaks_per_km, x='MATERIAL', y='BREAKS_PER_KM',
                         title="Breaks per km by Material",
                         labels={"BREAKS_PER_KM": "Breaks per km"})
+            st.session_state['fig4_2'] = fig4
             st.plotly_chart(fig4, use_container_width=True)
 
         # --- Tab 4: Pipe Count by Material and Decade ---
@@ -455,6 +503,7 @@ if run_analysis:
                 labels={"COUNT": "Number of Pipes"},
                 barmode='group'
             )
+            st.session_state['fig5_2'] = fig5
             st.plotly_chart(fig5, use_container_width=True)
 
         # --- Tab 5: Pipe Length by Material and Decade ---
@@ -468,10 +517,14 @@ if run_analysis:
                 labels={"LENGTH_KM": "Length (km)"},
                 barmode='group'
             )
+            st.session_state['fig6_2'] = fig6 
             st.plotly_chart(fig6, use_container_width=True)
+      
 
 
     else:
         st.error("❌ No valid data found. Please upload your Access or Excel file first.")
 else:
     st.info("Press the button above to run preprocessing (only for Access file) and plot (for both Access and Excel files).")
+
+
