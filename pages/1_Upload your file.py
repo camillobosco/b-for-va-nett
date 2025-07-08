@@ -86,7 +86,7 @@ You can upload either:
 """, unsafe_allow_html=True)
 
 
-uploaded_file = st.file_uploader("Upload Access (.mdb/.accdb) or Excel (.xlsx) file (max ~200MB)", type=["mdb", "accdb", "xlsx"])
+uploaded_file = st.file_uploader("Upload Access (.mdb/.accdb) or Excel (.xlsx) file (max ~1GB)", type=["mdb", "accdb", "xlsx"])
 temp_db_path = None
 
 if uploaded_file is not None and uploaded_file.name.lower().endswith(".xlsx"):
@@ -122,7 +122,7 @@ if uploaded_file is not None and uploaded_file.name.lower().endswith(".xlsx"):
 
 # Continue with Access file logic if not Excel
 if uploaded_file is not None and uploaded_file.name.lower().endswith((".mdb", ".accdb")):
-    if uploaded_file.size > 200 * 1024 * 1024:
+    if uploaded_file.size > 1000 * 1024 * 1024:
         st.warning("⚠️ File too large. Please paste the full path to the Access file on your system.")
         manual_path = st.text_input("Enter full path to the Access .mdb or .accdb file:")
         if manual_path and os.path.exists(manual_path):

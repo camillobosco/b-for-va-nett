@@ -1,0 +1,12 @@
+[server]
+maxUploadSize = 1024
+enableCORS = false
+enableXsrfProtection = false
+runOnSave = true
+
+[theme]
+primaryColor = "#003c65"             # Deep navy blue - strong brand tone
+backgroundColor = "#f8f9fa"          # Light gray - easier on the eyes than pure white
+secondaryBackgroundColor = "#e3f2fd" # Subtle blue for panels and sidebar
+textColor = "#212529"                # Slightly softened black - better for long reads
+font = "sans serif"                  # Clean and modern (similar to Helvetica/Roboto)

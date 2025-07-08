@@ -223,7 +223,7 @@ if run_analysis:
 
         # Save the final preprocessed dataframe in session state
         st.session_state.df_line_preprocessed = df_final
-        st.success("✅ Tables successfully preprocessed in session state. You can now move to the AI model page.")
+        #st.success("✅ Tables successfully preprocessed in session state. You can now move to the AI model page.")
 
         # EXPORT TO EXCEL
         excel_buffer = BytesIO()
@@ -241,6 +241,7 @@ if run_analysis:
             file_name="processed_VA_data.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+        st.success("✅ Tables successfully preprocessed in session state. You can now move to the AI model page.")
 
         # ---------------- VISUALIZATIONS ----------------
         
@@ -384,8 +385,8 @@ if run_analysis:
 
     # If Access data NOT found but Excel data loaded
     elif 'df_excel' in st.session_state:
-        if 'df_line_preprocessed' in st.session_state:
-         del st.session_state.df_line_preprocessed          
+        #if 'df_line_preprocessed' in st.session_state:
+         #del st.session_state.df_line_preprocessed          
         st.info("Excel data detected. Plotting basic summary chart...")
 
         df_excel = st.session_state.df_excel.copy()

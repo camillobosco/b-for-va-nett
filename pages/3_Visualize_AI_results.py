@@ -10,6 +10,33 @@ from io import BytesIO
 # ----------------------------
 # Load models and extract feature names (cached)
 # ----------------------------
+st.title("Results of AI models")
+predict_button = st.button("Predict!")
+
+
+# Se i grafici sono già in session_state, plotta subito e interrompi ulteriori elaborazioni
+if ('fig1_3' in st.session_state and
+    'fig2_3' in st.session_state and
+    'fig3_3' in st.session_state):
+    
+    tabs = st.tabs([
+        "📊 Predictions Overview",
+        "⚠️ High-Risk Pipes",
+        "📐 Age vs Length"
+    ])
+
+    with tabs[0]:
+        st.markdown("📊 Predictions Overview")
+        st.plotly_chart(st.session_state['fig1_3'])
+    with tabs[1]:
+        st.markdown("⚠️ High-Risk Pipes")
+        st.plotly_chart(st.session_state['fig2_3'])
+    with tabs[2]:
+        st.markdown("📐 Age vs Length")
+        st.plotly_chart(st.session_state['fig3_3'])
+        
+    st.stop()
+
 @st.cache_resource
 def load_models_and_features():
     try:
@@ -122,24 +149,29 @@ def label_prediction(row):
 # ----------------------------
 # Streamlit UI
 # ----------------------------
-st.title("Results of AI models")
 
-uploaded_file = st.file_uploader("Upload pipes data Excel file", type=['xlsx', 'xls'])
-if uploaded_file:
-    df_excel = pd.read_excel(uploaded_file)
-    st.session_state.df_excel = df_excel
-    st.success(f"Loaded data with {len(df_excel)} rows.")
 
-predict_button = st.button("Predict !")
+#uploaded_file = st.file_uploader("Upload pipes data Excel file", type=['xlsx', 'xls'])
+    # Check if Access data is loaded (session_state has these dfs)
+if ('df_line_preprocessed' in st.session_state):
+    st.info("Access data detected...")
+    df_AI = st.session_state.df_line_preprocessed.copy()
+    st.success(f"Loaded data with {len(df_AI)} rows.")
+elif ('df_excel' in st.session_state):
+    st.info("Excel data detected...")
+    df_AI = st.session_state.df_excel.copy()
+    st.success(f"Loaded data with {len(df_AI)} rows.")
+else:
+    st.info("No data detected, go to the upload page...")
+    st.stop()
+    
+
 
 if predict_button:
-    if 'df_excel' not in st.session_state:
+    if df_AI is None:
         st.warning("No data found. Please upload data first.")
     else:
-        df_input = st.session_state.df_excel
-
-        df_binary, df_prob = process_future_pipes(df_input)
-
+        df_binary, df_prob = process_future_pipes(df_AI)
         df_binary['Prediction'] = df_binary.apply(label_prediction, axis=1)
         df_binary['Age_Group'] = pd.cut(df_binary['Age'], bins=[0, 3000, 6000, 9000, 12000, 15000],
                                         labels=["0–3k", "3–6k", "6–9k", "9–12k", "12k+"])
@@ -168,18 +200,41 @@ if predict_button:
 
         with tabs[0]:
             counts = df_binary['Prediction'].value_counts().reindex(['Both Fail', 'Disagree', 'Both Survive'], fill_value=0)
-            fig = px.bar(counts.reset_index(), x='index', y='Prediction',
-                         color='index', text='Prediction',
-                         color_discrete_map={'Both Fail': 'crimson', 'Disagree': 'orange', 'Both Survive': 'green'})
-            fig.update_traces(textposition='outside')
-            st.plotly_chart(fig, use_container_width=True)
+            counts_df = counts.reset_index()
+            counts_df.columns = ['Prediction_Label', 'Count']
+            fig1 = px.bar(counts_df, x='Prediction_Label', y='Count',
+              color='Prediction_Label', text='Count',
+              color_discrete_map={'Both Fail': 'crimson', 'Disagree': 'orange', 'Both Survive': 'green'})
+            fig1.update_traces(textposition='outside')
+            st.session_state['fig1_3'] = fig1
+            st.plotly_chart(fig1, use_container_width=True)
 
         with tabs[1]:
             st.dataframe(high_risk_df[['LSID', 'LENGTH', 'MATERIAL', 'YEAR', 'Age', 'Prediction']])
             st.markdown(f"**Total High-Risk Pipes:** {len(high_risk_df)}")
+
+            #conteggio dei materiali tra i tubi high risk
+            material_counts = high_risk_df['MATERIAL'].value_counts().reset_index()
+            material_counts.columns = ['MATERIAL', 'count']
+            fig2 = px.bar(material_counts, x='MATERIAL', y='count', text='count')
+            fig2.update_traces(textposition='outside')
+    
+            st.session_state['fig2_3'] = fig2
+            st.plotly_chart(fig2, use_container_width=True)
+    
             st.download_button("Download CSV", high_risk_df.to_csv(index=False), "high_risk_pipes.csv")
 
         with tabs[2]:
-            fig2 = px.scatter(df_binary, x='Age', y='LENGTH', color='Prediction',
-                              hover_data=['LSID', 'MATERIAL', 'YEAR'])
-            st.plotly_chart(fig2, use_container_width=True)
+            # Scatter plot: Age vs LENGTH, colored by Prediction
+            fig3 = px.scatter(
+                df_binary,
+                x='Age',
+                y='LENGTH',
+                color='Prediction',
+                hover_data=['LSID', 'MATERIAL', 'YEAR']
+            )
+            fig3.update_layout(title="Age vs Length by Prediction", xaxis_title="Age (days)", yaxis_title="Length (m)")
+        
+            st.session_state['fig3_3'] = fig3
+            st.plotly_chart(fig3, use_container_width=True)
+
